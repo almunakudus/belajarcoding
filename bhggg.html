@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arrange the Words Game</title>
+<style>
+  body {
+    background-color: #121212;
+    color: #fff;
+    font-family: 'Poppins', sans-serif;
+    text-align: center;
+    padding: 30px;
+  }
+
+  h1 {
+    color: #00ffcc;
+    text-shadow: 0 0 10px #00ffcc;
+  }
+
+  #word-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 30px 0;
+  }
+
+  .word {
+    background-color: #1e1e1e;
+    border: 2px solid #00ffcc;
+    border-radius: 12px;
+    padding: 10px 18px;
+    cursor: grab;
+    font-size: 18px;
+    transition: 0.2s;
+  }
+
+  .word:hover {
+    background-color: #00ffcc;
+    color: #121212;
+    transform: scale(1.1);
+  }
+
+  textarea {
+    width: 80%;
+    height: 60px;
+    font-size: 18px;
+    padding: 10px;
+    border-radius: 10px;
+    border: 2px solid #00ffcc;
+    background-color: #1e1e1e;
+    color: #00ffcc;
+    resize: none;
+  }
+
+  button {
+    margin: 15px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    background-color: #00ffcc;
+    color: #121212;
+    font-weight: bold;
+    font-size: 16px;
+    transition: 0.3s;
+  }
+
+  button:hover {
+    background-color: #00ffaa;
+    transform: scale(1.05);
+  }
+
+  #feedback {
+    font-size: 22px;
+    margin-top: 20px;
+    font-weight: bold;
+  }
+
+  .correct {
+    color: #00ff88;
+    text-shadow: 0 0 8px #00ff88;
+  }
+
+  .wrong {
+    color: #ff4444;
+    text-shadow: 0 0 8px #ff4444;
+  }
+</style>
+</head>
+<body>
+
+<h1>🎮 Arrange the Words Challenge 🎯</h1>
+<p>Drag kata ke bawah untuk menyusun kalimat yang benar.</p>
+
+<div id="word-container"></div>
+
+<textarea id="answer" placeholder="Drop kata di sini..." ondrop="drop(event)" ondragover="allowDrop(event)"></textarea>
+<br>
+<button onclick="checkAnswer()">💥 HASIL</button>
+<button onclick="resetGame()">🔁 RESET</button>
+
+<div id="feedback"></div>
+
+<script>
+const correctAnswer = "I-am-going-to-the-market";
+let words = ["I", "am", "going", "to", "the", "market"];
+
+// Fungsi untuk mengacak kata
+function shuffle(array) {
+  let currentIndex = array.length, randomIndex;
+  while (currentIndex !== 0) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+    [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+  }
+  return array;
+}
+
+// Tampilkan kata acak
+function displayWords() {
+  const container = document.getElementById('word-container');
+  container.innerHTML = "";
+  shuffle(words.slice()).forEach((word, i) => {
+    const el = document.createElement("div");
+    el.className = "word";
+    el.textContent = word;
+    el.draggable = true;
+    el.id = "word" + i;
+    el.ondragstart = drag;
+    container.appendChild(el);
+  });
+}
+
+// Drag and drop
+function allowDrop(ev) {
+  ev.preventDefault();
+}
+
+function drag(ev) {
+  ev.dataTransfer.setData("text", ev.target.id);
+}
+
+function drop(ev) {
+  ev.preventDefault();
+  const data = ev.dataTransfer.getData("text");
+  const word = document.getElementById(data);
+  document.getElementById("answer").value += (document.getElementById("answer").value ? "-" : "") + word.textContent;
+  word.remove();
+}
+
+// Cek jawaban
+function checkAnswer() {
+  const userAnswer = document.getElementById("answer").value.trim();
+  const feedback = document.getElementById("feedback");
+
+  if (userAnswer === correctAnswer) {
+    feedback.textContent = "🔥 JOSS KAMU BENAR!";
+    feedback.className = "correct";
+  } else {
+    feedback.textContent = "😅 SALAH CHILL!";
+    feedback.className = "wrong";
+  }
+}
+
+// Reset permainan
+function resetGame() {
+  document.getElementById("answer").value = "";
+  document.getElementById("feedback").textContent = "";
+  displayWords();
+}
+
+// Jalankan pertama kali
+displayWords();
+</script>
+
+</body>
+</html>
